@@ -30,9 +30,14 @@ Project allows user interaction with at least three different types of form elem
 15
 Project uses Web storageLinks to an external site. or Sessions	15
 Project allow users to update existing records in the database, in a friendly way (data is pre-filled).
+
 Must update at least three fields.	15
 Project allow users to add records to the database	15
 Project must have at least 50 lines of client-side JavaScript code	15
 Project includes at least two local or external Web APIs
 As part of your submission, explain where the Fetch calls are.	15
 Project has a nice, professional and consistent design, free of typos. Uses at least 50 CSS properties or Bootstrap.
+
+
+
+Google Doc Ideas: https://docs.google.com/document/d/1Er1QSD3GFu0XPk4y9iw8Lk6_tMl3Wg4K5qQ_qJBn-tA/edit?usp=sharing
