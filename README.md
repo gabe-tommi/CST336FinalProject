@@ -30,6 +30,9 @@ Project allows user interaction with at least three different types of form elem
 15
 Project uses Web storageLinks to an external site. or Sessions	15
 Project allow users to update existing records in the database, in a friendly way (data is pre-filled).
+
+Google Doc Ideas: https://docs.google.com/document/d/1Er1QSD3GFu0XPk4y9iw8Lk6_tMl3Wg4K5qQ_qJBn-tA/edit?usp=sharing
+
 Must update at least three fields.	15
 Project allow users to add records to the database	15
 Project must have at least 50 lines of client-side JavaScript code	15
