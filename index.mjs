@@ -10,12 +10,12 @@ app.use(express.static('public'));
 app.use(express.urlencoded({extended:true}));
 
 // putting below as a template for creating a pool later.
-// const pool = mysql.createPool({
-//     host: "gabedevspace.com",
-//     user: "gabedevs_webuser",
-//     password: "(+U%[VpVSy$-",
-//     database: "gabedevs_quotes",
-//     connectionLimit: 10,
-//     waitForConnections: true
-// });
-// const conn = await pool.getConnection();
+const pool = mysql.createPool({
+    host: "jesusgarcialoyola.site",
+    user: "jesusgar_final_project",
+    password: "Jesus583213@",
+    database: "jesusgar_final_project_336",
+    connectionLimit: 10,
+    waitForConnections: true
+});
+const conn = await pool.getConnection();
