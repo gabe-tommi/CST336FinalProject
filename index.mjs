@@ -28,6 +28,10 @@ app.get('/studiomap', (req, res) => {
     res.render('studiomap');
 });
 
+app.get('/addgame', (req, res) => {
+    res.render('addgame');
+});
+
 app.get('/findmap', (req, res) => {
     res.render('findmap.ejs');
 });
