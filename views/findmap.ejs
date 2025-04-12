@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        #map {
+            height: 500px; /* Set the height of the map */
+            width: 100%;   /* Full width */
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the Home Page</h1>
+    <div id="map"></div>
+    <script>
+        function initMap() {
+            const geocoder = new google.maps.Geocoder();
+            const address = "Kyoto, 601-8501, Japan"; // Replace with your desired address
+
+            geocoder.geocode({ address: address }, (results, status) => {
+                if (status === "OK") {
+                    const location = results[0].geometry.location;
+                    const map = new google.maps.Map(document.getElementById('map'), {
+                        zoom: 12,
+                        center: location
+                    });
+                    new google.maps.Marker({
+                        position: location,
+                        map: map
+                    });
+                } else {
+                    console.error("Geocode was not successful for the following reason: " + status);
+                }
+            });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCprvYjcvCNi4M3HljJFSjffl_X6Jf7-0k&callback=initMap" async defer></script>
+</body>
+</html>

@@ -6,10 +6,10 @@ const app = express();
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-//for Express to get values using POST method
-app.use(express.urlencoded({extended:true}));
+// For Express to get values using POST method
+app.use(express.urlencoded({ extended: true }));
 
-// putting below as a template for creating a pool later.
+// Create a MySQL connection pool
 const pool = mysql.createPool({
     host: "jesusgarcialoyola.site",
     user: "jesusgar_final_project",
@@ -18,4 +18,21 @@ const pool = mysql.createPool({
     connectionLimit: 10,
     waitForConnections: true
 });
-const conn = await pool.getConnection();
+
+// Removed unused `conn` variable and ensured proper async/await usage
+app.get('/', (req, res) => {
+    res.send("Hello >3");
+});
+
+app.get('/studiomap', (req, res) => {
+    res.render('studiomap');
+});
+
+app.get('/findmap', (req, res) => {
+    res.render('findmap.ejs');
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
