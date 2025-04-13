@@ -24,16 +24,22 @@ app.get('/', (req, res) => {
     res.send("Hello >3");
 });
 
-app.get('/studiomap', (req, res) => {
-    res.render('studiomap');
+app.get('/studiomap', async(req, res) => {
+    const [rows] = await pool.query('SELECT * FROM studio'); 
+    console.log(rows)
+    res.render('studiomap', { studios: rows });
+
 });
 
 app.get('/addgame', (req, res) => {
     res.render('addgame');
 });
 
-app.get('/findmap', (req, res) => {
-    res.render('findmap.ejs');
+app.get('/findmap', async (req, res) => {
+    const place = req.query.place; // Get the selected place from the query string
+    console.log(`Selected place: ${place}`);
+    const [rows] = await pool.query('SELECT * FROM studio');
+    res.render('findmap', { studios: rows, place:place });
 });
 
 const PORT = process.env.PORT || 3000;

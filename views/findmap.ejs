@@ -16,17 +16,18 @@
     <h1 class="mt-3">Map Studio</h1>
     <div id="map" class="mb-3"></div>
     <div class="footer mt-3">
-        <form action="/findmap">
-            <select name="cars" id="cars" class="form-select w-auto mb-2">
-                <option value="volvo">Volvo</option>
-            </select>
-            <button class="btn btn-primary">Submit</button>
-        </form>
+        <%- include('partials/footer') %>
     </div>
     <script>
         function initMap() {
             const geocoder = new google.maps.Geocoder();
-            const address = "Kyoto, 601-8501, Japan"; // Replace with your desired address
+            const address = `<%= place.replace(/'/g, "\\'") %>`; // Escape single quotes for JavaScript
+
+            if (!address) {
+                console.error("No address provided.");
+                alert("No address provided to display on the map.");
+                return;
+            }
 
             geocoder.geocode({ address: address }, (results, status) => {
                 if (status === "OK") {
@@ -41,10 +42,24 @@
                     });
                 } else {
                     console.error("Geocode was not successful for the following reason: " + status);
+                    alert("Failed to load the map. Please try again.");
                 }
             });
         }
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCprvYjcvCNi4M3HljJFSjffl_X6Jf7-0k&callback=initMap" async defer></script>
+    <div class="footer mt-3">
+        <form action="/findmap" method="get">
+            <label for="place" class="form-label">Select a Studio:</label>
+            <select name="place" id="place" class="form-select w-auto mb-3">
+                <% studios.forEach(studio => { %>
+                    <option value="<%= studio.address %>">
+                        <%= studio.studio_name %>
+                    </option>
+                <% }); %>
+            </select>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
 </body>
 </html>
