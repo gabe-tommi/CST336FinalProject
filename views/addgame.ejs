@@ -9,15 +9,14 @@
 </head>
 <body class="d-flex flex-column justify-content-center align-items-center text-center">
     <h1>Add Game</h1>
-    <form action="addgame">
+    <form action="/addgame" method="POST">
         <label>Name of the Game</label>
         <br>
-        <input id="name" type="text">
+        <input id="name" type="text" name="name" required>
         <br>
         <label>Genre</label>
         <br>
-        <select id="genre" name="genre">
-            <option value="N/A">Select</option>
+        <select id="genre" name="genre" required>
             <option value="Action">Action</option>
             <option value="Adventure">Adventure</option>
             <option value="RPG">RPG</option>
@@ -33,16 +32,16 @@
             <option value="Survival">Survival</option>
             <option value="Horror">Horror</option>
             <option value="Battle Royale">Battle Royale</option>
-            <option value="Other">other</option>
+            <option value="Other">Other</option>
         </select>
         <br>
         <label>Studio name</label>
         <br>
-        <input id="Studio name" type="text">
+        <input id="studio_name" type="text" name="studio_name" required>
         <br>
         <label>Studio Address</label>
         <br>
-        <textarea name="addres" id="addres"></textarea>
+        <textarea name="address" id="address"></textarea>
         <br>
         <button class="btn btn-primary">Submit</button>
     </form>

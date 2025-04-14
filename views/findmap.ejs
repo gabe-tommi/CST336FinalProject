@@ -25,7 +25,8 @@
 
             if (!address) {
                 console.error("No address provided.");
-                alert("No address provided to display on the map.");
+                alert("Soory, we couldn't find the studio.\n Please try again.");
+                window.location.href = '/studiomap'; // Redirect to studiomap.ejs
                 return;
             }
 
@@ -41,8 +42,9 @@
                         map: map
                     });
                 } else {
-                    console.error("Geocode was not successful for the following reason: " + status);
-                    alert("Failed to load the map. Please try again.");
+                    // console.error("Geocode was not successful for the following reason: " + status);
+                    alert("Soory, we couldn't find the studio.\nPlease try with other one.");
+                    window.location.href = '/studiomap'; // Redirect to studiomap.ejs
                 }
             });
         }
