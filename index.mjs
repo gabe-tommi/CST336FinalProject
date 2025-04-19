@@ -19,3 +19,8 @@ app.use(express.urlencoded({extended:true}));
 //     waitForConnections: true
 // });
 // const conn = await pool.getConnection();
+
+app.get('/', (req, res) => {
+    
+    res.render('landing');
+});
