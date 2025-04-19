@@ -7,10 +7,12 @@
 </head>
 <body>
     <h1>Game Search</h1>
+    <%- include ('partials/navbar') %>
     <form action="/search" method="GET">
-        <input type="text" name="query" placeholder="Search for a game..." required>
+        <input type="text" name="query" placeholder="Search for a game...(Enter title)" required>
         <button type="submit">Search</button>
     </form>
+
     
 </body>
 </html>
