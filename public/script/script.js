@@ -1,4 +1,4 @@
-document.querySelector('form').addEventListener('submit', async (event) => {
+document.querySelector('#addGameForm').addEventListener('submit', async (event) => {
     const name = document.getElementById('name').value.trim();
     const genre = document.getElementById('genre').value;
     const studioName = document.getElementById('studio_name').value.trim();
