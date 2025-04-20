@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Game</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="public/style/styles.css">
+    <link rel="stylesheet" href="/style/styles.css">
 </head>
 <body class="d-flex flex-column justify-content-center align-items-center text-center">
-    <h1>Add Game</h1>
+    <header>
+        <h1>Add Game</h1>
+    </header>
     <form action="/addgame" method="POST">
         <label>Name of the Game</label>
         <br>
@@ -41,9 +43,10 @@
         <br>
         <label>Studio Address</label>
         <br>
-        <textarea name="address" id="address"></textarea>
+        <textarea name="address" id="address" required></textarea>
         <br>
         <button class="btn btn-primary">Submit</button>
     </form>
+    <script src="/script/script.js"></script>
 </body>
 </html>
