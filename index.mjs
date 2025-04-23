@@ -7,6 +7,24 @@ const app = express();
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
+
+//for Express to get values using POST method
+app.use(express.urlencoded({extended:true}));
+
+// putting below as a template for creating a pool later.
+// const pool = mysql.createPool({
+//     host: "gabedevspace.com",
+//     user: "gabedevs_webuser",
+//     password: "(+U%[VpVSy$-",
+//     database: "gabedevs_quotes",
+//     connectionLimit: 10,
+//     waitForConnections: true
+// });
+// const conn = await pool.getConnection();
+
+//Landing page render to then redirct once user clicks sign in or login
+
+
 // For Express to get values using POST method
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // To parse JSON bodies
@@ -23,7 +41,29 @@ const pool = mysql.createPool({
 
 // Home route
 app.get('/', (req, res) => {
-    res.send("Hello >3");
+    
+    res.render('landing');
+});
+//Goes to login page when user clicks login
+app.get('/signin', (req, res) => {
+    res.render('signin');
+});
+//Goes to signup page when user clicks sign up
+app.get('/signup', (req, res) => {
+    res.render('signup');
+});
+//search page when user clicks search for games
+app.get('/search', (req, res) => {
+    let search = req.query.search;
+    console.log(search)
+
+    res.render('gamesearch');
+});
+// Connects gameSearch to the navbar and renders the page
+app.get('/gameSearch', async (req, res) => {
+    let search=null;
+
+    res.render('gameSearch', { search: search });
 });
 
 // Route to display studio map
@@ -108,3 +148,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
