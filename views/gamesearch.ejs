@@ -9,10 +9,34 @@
     <h1>Game Search</h1>
     <%- include ('partials/navbar') %>
     <form action="/search" method="GET">
-        <input type="text" name="query" placeholder="Search for a game...(Enter title)" required>
+        <input type="text" name="query" placeholder="Search for a game..." required>
         <button type="submit">Search</button>
     </form>
 
+    <% if (search && search.length > 0) { %>
+        <form action="/favorite" method="POST">
+            <% for (let game of search) { %>
+                <div>
+                    <strong>Name:</strong> <%= game.game_name %><br>
+                    <strong>Genre:</strong> <%= game.genre %><br>
+                    <strong>Studio:</strong> <%= game.studio_name %><br><br>
+
+                    <label>
+                        <input type="radio" name="favorite[<%= game.video_game_id %>]" value="yes" required>
+                        Yes
+                    </label>
+                    <label>
+                        <input type="radio" name="favorite[<%= game.video_game_id %>]" value="no">
+                        No
+                    </label>
+                </div>
+            <% } %>
+
+            <button type="submit">Add to favorite</button>
+        </form>
+    <% } else { %>
+        <p>waiting...</p>
+    <% } %>
     
 </body>
 </html>

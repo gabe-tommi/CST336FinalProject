@@ -28,6 +28,7 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.urlencoded({ extended: true }));
 
 // Create a MySQL connection pool
+
 const pool = mysql.createPool({
     host: "jesusgarcialoyola.site",
     user: "jesusgar_final_project",
@@ -36,6 +37,7 @@ const pool = mysql.createPool({
     connectionLimit: 10,
     waitForConnections: true
 });
+
 
 // Removed unused `conn` variable and ensured proper async/await usage
 app.get('/', (req, res) => {
@@ -51,17 +53,22 @@ app.get('/signup', (req, res) => {
     res.render('signup');
 });
 //search page when user clicks search for games
-app.get('/search', (req, res) => {
-    let search = req.query.search;
-    console.log(search)
+app.get('/search', async (req, res) => {
+    let sea = req.query.query;
+    console.log(sea)
+    if(!sea) {
+        sea = '';
+    }
+    const sql = `SELECT * FROM video_games WHERE game_name LIKE ?`;
+    const [search] = await pool.query(sql, [`%${sea}%`]);
 
-    res.render('gamesearch');
+    res.render('gamesearch',{search});
 });
 // Connects gameSearch to the navbar and renders the page
-app.get('/gameSearch', async (req, res) => {
-    let search=null;
-
-    res.render('gameSearch', { search: search });
+app.get('/gamesearch',(req, res) => {
+    let search=[];
+    
+    res.render('gamesearch.ejs', { search});
 });
 
 app.get('/studiomap', async(req, res) => {
@@ -109,6 +116,28 @@ app.post('/addgame', async (req, res) => {
         console.error('Error adding game:', error);
         res.status(500).send('Error adding the game.');
     }
+});
+
+app.post('/favorite', async (req, res) => {
+    const gameId = req.body.gameId; 
+    const query = req.body.query; 
+    const fav = req.body.favoriteGameId;
+    if(fav ==0 || query == undefined || query == undefined){
+        const sql = `SELECT * FROM video_games WHERE game_name LIKE ?`;
+        const [search] = await pool.query(sql, [`%${query}%`]);
+    
+
+    }else{
+        const sql = `INSERT IGNORE INTO favorite (user_id, video_game_id) VALUES (?, ?)`;
+        [userId, videoGameId]
+    }
+    console.log(`Game ID: ${gameId}`);
+
+    const sql = `SELECT * FROM video_games WHERE game_name LIKE ?`;
+    const [search] = await pool.query(sql, [`%${query}%`]);
+
+
+    res.render('gamesearch.ejs', { search, searchQuery:query});
 });
 
 
