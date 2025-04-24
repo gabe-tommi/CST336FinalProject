@@ -6,3 +6,11 @@ body {
 h1, img, .navbar, .footer {
     margin: 0; /* Removes any default margin */
 }
+header {
+    background-color: #333; /* Dark background for header */
+    color: white; /* White text color */
+    width: 100%; /* Ensure the header spans the full width */
+    text-align: center; /* Center the text inside the header */
+    padding: 10px; /* Add padding around the header content */
+    box-sizing: border-box; /* Include padding in the element's width */
+}
