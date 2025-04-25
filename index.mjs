@@ -152,3 +152,7 @@ app.listen(PORT, () => {
 app.get('/home', (req, res) => {
     res.render('home');
 });
+
+app.get('/updateDB', (req, res) => {
+    res.render('updateDB');
+});
