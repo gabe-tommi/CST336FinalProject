@@ -30,6 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // To parse JSON bodies
 
 // Create a MySQL connection pool
+
 const pool = mysql.createPool({
     host: "jesusgarcialoyola.site",
     user: "jesusgar_final_project",
@@ -39,7 +40,7 @@ const pool = mysql.createPool({
     waitForConnections: true
 });
 
-// Home route
+
 app.get('/', (req, res) => {
     
     res.render('landing');
@@ -53,17 +54,22 @@ app.get('/signup', (req, res) => {
     res.render('signup');
 });
 //search page when user clicks search for games
-app.get('/search', (req, res) => {
-    let search = req.query.search;
-    console.log(search)
+app.get('/search', async (req, res) => {
+    let sea = req.query.query;
+    console.log(sea)
+    if(!sea) {
+        sea = '';
+    }
+    const sql = `SELECT * FROM video_games WHERE game_name LIKE ?`;
+    const [search] = await pool.query(sql, [`%${sea}%`]);
 
-    res.render('gamesearch');
+    res.render('gamesearch',{search});
 });
 // Connects gameSearch to the navbar and renders the page
-app.get('/gameSearch', async (req, res) => {
-    let search=null;
-
-    res.render('gameSearch', { search: search });
+app.get('/gamesearch',(req, res) => {
+    let search=[];
+    
+    res.render('gamesearch.ejs', { search});
 });
 
 // Route to display studio map
@@ -124,6 +130,29 @@ app.post('/addgame', async (req, res) => {
     }
 });
 
+app.post('/favorite', async (req, res) => {
+    const gameId = req.body.gameId; 
+    const query = req.body.query; 
+    const fav = req.body.favoriteGameId;
+    if(fav ==0 || query == undefined || query == undefined){
+        const sql = `SELECT * FROM video_games WHERE game_name LIKE ?`;
+        const [search] = await pool.query(sql, [`%${query}%`]);
+    
+
+    }else{
+        const sql = `INSERT IGNORE INTO favorite (user_id, video_game_id) VALUES (?, ?)`;
+        [userId, videoGameId]
+    }
+    console.log(`Game ID: ${gameId}`);
+
+    const sql = `SELECT * FROM video_games WHERE game_name LIKE ?`;
+    const [search] = await pool.query(sql, [`%${query}%`]);
+
+
+    res.render('gamesearch.ejs', { search, searchQuery:query});
+});
+
+
 // API route to search for studios by name or address
 app.get('/api/studios', async (req, res) => {
     const searchTerm = req.query.q; // Get the search term from the query string
@@ -143,9 +172,17 @@ app.get('/api/studios', async (req, res) => {
     }
 });
 
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
+app.get('/home', (req, res) => {
+    res.render('home');
+});
+
+app.get('/updateDB', (req, res) => {
+    res.render('updateDB');
+});
