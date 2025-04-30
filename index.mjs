@@ -1,4 +1,3 @@
-import { render } from 'ejs';
 import express from 'express';
 import mysql from 'mysql2/promise';
 
@@ -7,25 +6,20 @@ const app = express();
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-
-//for Express to get values using POST method
-app.use(express.urlencoded({extended:true}));
-
-// For Express to get values using POST method
+// Middleware for parsing POST data
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // To parse JSON bodies
 
-function userAuth(req, res, next){ // middleware function to ensure User Authentication
-    if(req.session.userAuthenticated){
+// Middleware for user authentication
+function userAuth(req, res, next) {
+    if (req.session?.userAuthenticated) {
         next();
-    }
-    else{
+    } else {
         res.redirect('/');
     }
 }
 
 // Create a MySQL connection pool
-
 const pool = mysql.createPool({
     host: "jesusgarcialoyola.site",
     user: "jesusgar_final_project",
@@ -35,193 +29,172 @@ const pool = mysql.createPool({
     waitForConnections: true
 });
 
+// Routes
 app.get('/', (req, res) => {
     res.render('landing');
 });
 
-//Goes to login page when user clicks login
 app.get('/signin', (req, res) => {
     res.render('signin');
 });
-//Goes to signup page when user clicks sign up
+
 app.get('/signup', (req, res) => {
     res.render('signup');
 });
+
 app.post('/signup', async (req, res) => {
-    let username = req.body.username;
-    let password = req.body.password;
-    let email = req.body.email;
-    let firstname = req.body.firstname;
-    let lastname = req.body.lastname;
-    let sql = `INSERT INTO user (username, password, email, first_name, last_name) 
-                VALUES (?, ?, ?, ?, ?)`;
-    let sqlParams = [username, password, email, firstname, lastname];
-    await pool.query(sql, sqlParams);
-    res.render('signup');
-});
-//search page when user clicks search for games
-app.get('/search', async (req, res) => {
-    let sea = req.query.query;
-    console.log(sea)
-    if(!sea) {
-        sea = '';
+    const { username, password, email, firstname, lastname } = req.body;
+    const sql = `INSERT INTO user (username, password, email, first_name, last_name) VALUES (?, ?, ?, ?, ?)`;
+    const sqlParams = [username, password, email, firstname, lastname];
+    try {
+        await pool.query(sql, sqlParams);
+        res.redirect('/signin');
+    } catch (error) {
+        console.error('Error signing up:', error);
+        res.status(500).send('Error signing up. Please try again.');
     }
+});
+
+app.get('/search', async (req, res) => {
+    const query = req.query.query || '';
     const sql = `SELECT * FROM video_games WHERE game_name LIKE ?`;
-    const [search] = await pool.query(sql, [`%${sea}%`]);
-
-    res.render('gamesearch',{search});
-});
-// Connects gameSearch to the navbar and renders the page
-app.get('/gamesearch',(req, res) => {
-    let search=[];
-    
-    res.render('gamesearch.ejs', { search});
+    try {
+        const [search] = await pool.query(sql, [`%${query}%`]);
+        res.render('gamesearch', { search });
+    } catch (error) {
+        console.error('Error searching games:', error);
+        res.status(500).send('Error searching games.');
+    }
 });
 
-// Route to display studio map
+app.get('/gamesearch', (req, res) => {
+    res.render('gamesearch', { search: [] });
+});
+
 app.get('/studiomap', async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT * FROM studio');
-        console.log(rows);
-        res.render('studiomap', { studios: rows });
+        const [studios] = await pool.query('SELECT * FROM studio');
+        res.render('studiomap', { studios });
     } catch (error) {
         console.error('Error fetching studios:', error);
-        res.status(500).send('Error fetching studios');
+        res.status(500).send('Error fetching studios.');
     }
 });
-app.post('/updateDB', async (req, res) => {
-    const conn = await pool.getConnection();
-    const sql = `UPDATE video_games 
-                 SET game_name = ?, genre = ?, studio_name = ?
-                 WHERE video_game_id = ?`;
-    const params = [
-        req.body.game_name,
-        req.body.genre,
-        req.body.studio_name,
-        req.body.video_game_id
-    ];
-    await conn.query(sql, params);
-    const sq12 = 'UPDATE studio SET address = ? WHERE studio_id = ?';
-    const params2 =[
-        req.body.address,
-        req.body.studio_id
-    ];
-    await conn.query(sq12,params2)
-    conn.release();
-    res.redirect('/viewlist');
-});
-//route to viewlist
-app.get('/viewlist', async(req, res) =>{
-    try{
-        const[rows] = await pool.query('SELECT video_games.video_game_id, video_games.game_name,video_games.genre,video_games.studio_name,studio.address,studio.studio_id FROM video_games INNER JOIN studio ON video_games.studio_name = studio.studio_name');
-        console.log(rows);
-        res.render('viewlist', {games: rows });
-    
-    }catch(error){
-        console.error('Error fetching games:', error);
-        res.status(500).send('Error fetching games');
-    }
 
+app.post('/updateDB', async (req, res) => {
+    const { game_name, genre, studio_name, video_game_id, address, studio_id } = req.body;
+    try {
+        const conn = await pool.getConnection();
+        const updateGameSql = `UPDATE video_games SET game_name = ?, genre = ?, studio_name = ? WHERE video_game_id = ?`;
+        const updateStudioSql = `UPDATE studio SET address = ? WHERE studio_id = ?`;
+        await conn.query(updateGameSql, [game_name, genre, studio_name, video_game_id]);
+        await conn.query(updateStudioSql, [address, studio_id]);
+        conn.release();
+        res.redirect('/viewlist');
+    } catch (error) {
+        console.error('Error updating database:', error);
+        res.status(500).send('Error updating database.');
+    }
 });
-// Route to render the add game form
+
+app.get('/viewlist', async (req, res) => {
+    const sql = `
+        SELECT video_games.video_game_id, video_games.game_name, video_games.genre, 
+               video_games.studio_name, studio.address, studio.studio_id
+        FROM video_games
+        INNER JOIN studio ON video_games.studio_name = studio.studio_name
+    `;
+    try {
+        const [games] = await pool.query(sql);
+        res.render('viewlist', { games });
+    } catch (error) {
+        console.error('Error fetching games:', error);
+        res.status(500).send('Error fetching games.');
+    }
+});
+
 app.get('/addgame', (req, res) => {
     res.render('addgame');
 });
 
-// Route to find a studio and display it on a map
-app.get('/findmap', async (req, res) => {
-    const place = req.query.place; // Get the selected place from the query string
-    console.log(`Selected place: ${place}`);
+app.post('/addgame', async (req, res) => {
+    const { name, genre, studio_name, address } = req.body;
     try {
-        const [rows] = await pool.query('SELECT * FROM studio');
-        res.render('findmap', { studios: rows, place: place });
+        await pool.query(`INSERT INTO video_games (game_name, genre, studio_name) VALUES (?, ?, ?)`, [name, genre, studio_name]);
+        await pool.query(`INSERT INTO studio (studio_name, address) VALUES (?, ?)`, [studio_name, address]);
+        res.redirect('/viewlist');
     } catch (error) {
-        console.error('Error fetching studios:', error);
-        res.status(500).send('Error fetching studios');
+        console.error('Error adding game:', error);
+        res.status(500).send('Error adding game. Please try again.');
     }
 });
 
-// Route to add a game
-//  Route to add a game
-app.post('/addgame', async (req, res) => {
-    const { name, genre, studio_name, address } = req.body;
-
+app.get('/findmap', async (req, res) => {
+    const place = req.query.place;
     try {
-        // Insert into video_games table
-        await pool.query(
-            `INSERT INTO video_games (game_name, genre, studio_name) VALUES (?, ?, ?)`,
-            [name, genre, studio_name]
-        );
-
-        // Insert into studio table
-        await pool.query(
-            `INSERT INTO studio (studio_name, address) VALUES (?, ?)`,
-            [studio_name, address]
-        );
-
-        console.log(`Game added: ${name}, Genre: ${genre}, Studio: ${studio_name}, Address: ${address}`);
-       res.render('addgame')
-        // res.status(200).json({ success: 'Game added successfully' });
+        const [studios] = await pool.query('SELECT * FROM studio');
+        res.render('findmap', { studios, place });
     } catch (error) {
-        console.error('Error adding game:', error);
-        res.render('home')
-        // res.status(500).json({ error: 'Error adding game. Please try again.' });
+        console.error('Error fetching studios:', error);
+        res.status(500).send('Error fetching studios.');
     }
 });
 
 app.post('/favorite', async (req, res) => {
-    const gameId = req.body.gameId; 
-    const query = req.body.query; 
-    const fav = req.body.favoriteGameId;
-    if(fav ==0 || query == undefined || query == undefined){
-        const sql = `SELECT * FROM video_games WHERE game_name LIKE ?`;
-        const [search] = await pool.query(sql, [`%${query}%`]);
-    
-
-    }else{
-        const sql = `INSERT IGNORE INTO favorite (user_id, video_game_id) VALUES (?, ?)`;
-        [userId, videoGameId]
+    const { query, favorite } = req.body;
+    try {
+        if (!query || !favorite) {
+            const sql = `SELECT * FROM video_games WHERE game_name LIKE ?`;
+            const [search] = await pool.query(sql, [`%${query}%`]);
+            res.render('gamesearch', { search, searchQuery: query });
+        } else {
+            const sql = `INSERT IGNORE INTO favorite (user_id, video_game_id) VALUES (?, ?)`;
+            await pool.query(sql, [req.session.userId, favorite]);
+            res.redirect('/gamesearch');
+        }
+    } catch (error) {
+        console.error('Error processing favorite:', error);
+        res.status(500).send('Error processing favorite.');
     }
-    console.log(`Game ID: ${gameId}`);
-
-    const sql = `SELECT * FROM video_games WHERE game_name LIKE ?`;
-    const [search] = await pool.query(sql, [`%${query}%`]);
-
-
-    res.render('gamesearch.ejs', { search, searchQuery:query});
 });
 
-
-// API route to search for studios by name or address
 app.get('/api/studios', async (req, res) => {
-    const searchTerm = req.query.q; // Get the search term from the query string
-
+    const searchTerm = req.query.q || '';
     try {
-        // Query the database for studios matching the search term
-        const [rows] = await pool.query(
+        const [studios] = await pool.query(
             `SELECT * FROM studio WHERE studio_name LIKE ? OR address LIKE ?`,
             [`%${searchTerm}%`, `%${searchTerm}%`]
         );
-
-        // Return the results as JSON
-        res.json(rows);
+        res.json(studios);
     } catch (error) {
         console.error('Error searching for studios:', error);
-        res.status(500).json({ error: 'Error searching for studios' });
+        res.status(500).json({ error: 'Error searching for studios.' });
     }
-});
-
-
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
 });
 
 app.get('/home', (req, res) => {
     res.render('home');
 });
 
-app.get('/updateDB', (req, res) => {
-    res.render('updateDB');
+app.get('/updateDB', async (req, res) => {
+    const id = req.query.gameid; // Retrieve game_id from query parameters
+    try {
+        const sql = `SELECT * FROM video_games WHERE video_game_id = ?`;
+        const [games] = await pool.query(sql, [id]);
+        if (games.length > 0) {
+            const game = games[0]; // Get the first (and only) game
+            res.render('updateDB', { game });
+        } else {
+            res.status(404).send('Game not found');
+        }
+    } catch (error) {
+        console.error('Error fetching game:', error);
+        res.status(500).send('Error fetching game data.');
+    }
+});
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
