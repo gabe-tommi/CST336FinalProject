@@ -9,53 +9,63 @@
 </head>
 
 <body class="d-flex flex-column justify-content-center align-items-center text-center">
-    <header><h1 class="mt-3">Update Games</h1></header>
-    <br>
+    <header>
+        <h1 class="mt-3">Update Games</h1>
+    </header>
     <div class="navbar mb-3">
         <%- include('partials/navbar') %>
     </div>
   
-    <!-- filepath: /workspaces/CST336FinalProject/views/addgame.ejs -->
-     <form action = '/updateDB' method  = "POST">
+    <form action="/updateDB" method="POST">
+        <!-- Hidden input for studio name -->
+        <input type="hidden" name="studio_name" value="<%= game.video_game_id %>">
         <input type="hidden" name="video_game_id" value="<%= game.video_game_id %>">
-        <label for="video_game_name">Game Name:</label>
-        <input type="text" id="video_game_name" name="video_game_name" value="<%= game.video_game_name%>" required>
-        <br>
-         
-    <label>Genre</label>
+        <input type="hidden" name="studio_id" value="<%= game.studio_id %>">
+        <!-- Game Name -->
+        <div class="mb-3">
+            <label for="video_game_name" class="form-label">Game Name:</label>
+            <input type="text" id="video_game_name" name="video_game_name" class="form-control" value="<%= game.game_name %>" required>
+        </div>
+
+        <!-- Genre -->
+        <div class="mb-3">
+            <label for="genre" class="form-label">Genre</label>
+            <select id="genre" name="genre" class="form-select" required>
+                <option value="Action" <%= game.genre === 'Action' ? 'selected' : '' %>>Action</option>
+                <option value="Adventure" <%= game.genre === 'Adventure' ? 'selected' : '' %>>Adventure</option>
+                <option value="RPG" <%= game.genre === 'RPG' ? 'selected' : '' %>>RPG</option>
+                <option value="Shooter" <%= game.genre === 'Shooter' ? 'selected' : '' %>>Shooter</option>
+                <option value="Strategy" <%= game.genre === 'Strategy' ? 'selected' : '' %>>Strategy</option>
+                <option value="Simulation" <%= game.genre === 'Simulation' ? 'selected' : '' %>>Simulation</option>
+                <option value="Sports" <%= game.genre === 'Sports' ? 'selected' : '' %>>Sports</option>
+                <option value="Racing" <%= game.genre === 'Racing' ? 'selected' : '' %>>Racing</option>
+                <option value="Platformer" <%= game.genre === 'Platformer' ? 'selected' : '' %>>Platformer</option>
+                <option value="Puzzle" <%= game.genre === 'Puzzle' ? 'selected' : '' %>>Puzzle</option>
+                <option value="Casual" <%= game.genre === 'Casual' ? 'selected' : '' %>>Casual</option>
+                <option value="Party" <%= game.genre === 'Party' ? 'selected' : '' %>>Party</option>
+                <option value="Survival" <%= game.genre === 'Survival' ? 'selected' : '' %>>Survival</option>
+                <option value="Horror" <%= game.genre === 'Horror' ? 'selected' : '' %>>Horror</option>
+                <option value="Battle Royale" <%= game.genre === 'Battle Royale' ? 'selected' : '' %>>Battle Royale</option>
+                <option value="Other" <%= game.genre === 'Other' ? 'selected' : '' %>>Other</option>
+            </select>
+        </div>
+
+        <!-- Studio Name -->
+        <div class="mb-3">
+            <label for="studio_name" class="form-label">Studio Name</label>
+            <input id="studio_name" type="text" name="studio_name" class="form-control" value="<%= game.studio_name %>" required>
+        </div>
+
+        <!-- Studio Address -->
+        <div class="mb-3">
+            <label for="address" class="form-label">Studio Address</label>
+            <textarea name="address" id="address" class="form-control" required><%= game.address %></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
     <br>
-    <select id="genre" name="genre" required>
-        <option value="Action"<%= game.genre === 'Action' ? 'selected' : '' %>>Action</option>
-        <option value="Adventure"<%= game.genre === 'Adventure' ? 'selected' : '' %>>Adventure</option>
-        <option value="RPG"<%= game.genre === 'RPG' ? 'selected' : '' %>>RPG</option>
-        <option value="Shooter"<%= game.genre === 'Shooter' ? 'selected' : '' %>>Shooter</option>
-        <option value="Strategy"<%= game.genre === 'Strategy' ? 'selected' : '' %>>Strategy</option>
-        <option value="Simulation"<%= game.genre === 'Simulation' ? 'selected' : '' %>>Simulation</option>
-        <option value="Sports"<%= game.genre === 'Sports' ? 'selected' : '' %>>Sports</option>
-        <option value="Racing"<%= game.genre === 'Racing' ? 'selected' : '' %>>Racing</option>
-        <option value="Platformer"<%= game.genre === 'Platformer' ? 'selected' : '' %>>Platformer</option>
-        <option value="Puzzle"<%= game.genre === 'Puzzle' ? 'selected' : '' %>>Puzzle</option>
-        <option value="Casual"<%= game.genre === 'Casual' ? 'selected' : '' %>>Casual</option>
-        <option value="Party"<%= game.genre === 'Party' ? 'selected' : '' %>>Party</option>
-        <option value="Survival"<%= game.genre === 'Survival' ? 'selected' : '' %>>Survival</option>
-        <option value="Horror"<%= game.genre === 'Horror' ? 'selected' : '' %>>Horror</option>
-        <option value="Battle Royale"<%= game.genre === 'Battle Royale' ? 'selected' : '' %>>Battle Royale</option>
-        <option value="Other"<%= game.genre === 'Other' ? 'selected' : '' %>>Other</option>
-    </select>
-    <br>
-    <label for="studio_name">Studio name</label>
-    <br>
-    <input id="studio_name" type="text" name="studio_name" value="<%= game.studio_name%> " required>
-    <br>
-    <label for = "address">Studio Address</label>
-    <br>
-    <textarea name="address" id="address" required><%= game.address %></textarea>
-    <br>
-    <label for = "studio_name">Studio Name</label>
-    <input type="hidden" name="studio_name" value="<%= game.studio_name %>">
-    <button class="btn btn-primary">Update</button>
-</form>
-<br>
-<%- include('partials/footer') %>
+    <%- include('partials/footer') %>
 </body>
 </html>
