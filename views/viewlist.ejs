@@ -11,6 +11,10 @@
     <header> 
         <h1>View List</h1>
     </header>
+    <br>
+    <div class="navbar mb-3">
+        <%- include('partials/navbar') %>
+    </div>
     <section>
         <ul>
             <% games.forEach(game => { %>
@@ -18,7 +22,7 @@
                     <strong id = 'game_id'>Game ID:</strong> <%= game.video_game_id %><br>
                     <strong>Game Name:</strong> <%= game.game_name %><br>
                     <strong>Genre:</strong> <%= game.genre %><br>
-                    <strong>Studio:</strong> <%= game.studio_name %><br>
+                    <strong id = 'addr'>Studio:</strong> <%= game.studio_name %><br>
                     
                 
                     <a href="/updateDB?gameid=<%= game.video_game_id %>" class="btn btn-success">Update</a>

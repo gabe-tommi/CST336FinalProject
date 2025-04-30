@@ -12,19 +12,19 @@
     <header>
         <h1 class="mt-3">Update Games</h1>
     </header>
-    <br>
     <div class="navbar mb-3">
         <%- include('partials/navbar') %>
     </div>
   
     <form action="/updateDB" method="POST">
         <!-- Hidden input for studio name -->
-        <input type="hidden" name="studio_name" value="<%= game.studio_name %>">
-
+        <input type="hidden" name="studio_name" value="<%= game.video_game_id %>">
+        <input type="hidden" name="video_game_id" value="<%= game.video_game_id %>">
+        <input type="hidden" name="studio_id" value="<%= game.studio_id %>">
         <!-- Game Name -->
         <div class="mb-3">
             <label for="video_game_name" class="form-label">Game Name:</label>
-            <input type="text" id="video_game_name" name="video_game_name" class="form-control" value="<%= game.video_game_name %>" required>
+            <input type="text" id="video_game_name" name="video_game_name" class="form-control" value="<%= game.game_name %>" required>
         </div>
 
         <!-- Genre -->

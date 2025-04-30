@@ -81,35 +81,56 @@ app.get('/studiomap', async (req, res) => {
     }
 });
 
+app.get('/updateDB', async (req, res) => {
+    const id = req.query.gameid; // Retrieve game_id from query parameters
+    try {
+        const sql = `
+            SELECT video_games.video_game_id, video_games.game_name, video_games.genre, 
+                   video_games.studio_name, studio.address, studio.studio_id
+            FROM video_games
+            INNER JOIN studio ON video_games.studio_name = studio.studio_name
+            WHERE video_games.video_game_id = ?
+        `;
+        const [games] = await pool.query(sql, [id]);
+        if (games.length > 0) {
+            const game = games[0]; // Get the first (and only) game
+            // console.log(game)
+            res.render('updateDB', { game });
+        } else {
+            res.status(404).send('Game not found');
+        }
+    } catch (error) {
+        console.error('Error fetching game:', error);
+        res.status(500).send('Error fetching game data.');
+    }
+});
+
 app.post('/updateDB', async (req, res) => {
-    const { game_name, genre, studio_name, video_game_id, address, studio_id } = req.body;
+    let studio_names = req.body.studio_name
+    // let id = 
+    // console.log(studio_names[1])
+    const { video_game_name, video_game_id, genre, studio_name, address, studio_id } = req.body;
+
+    if (!video_game_id) {
+        return res.status(400).send('Missing video_game_id');
+    }
+
     try {
         const conn = await pool.getConnection();
+
+        // Update the video_games table
         const updateGameSql = `UPDATE video_games SET game_name = ?, genre = ?, studio_name = ? WHERE video_game_id = ?`;
-        const updateStudioSql = `UPDATE studio SET address = ? WHERE studio_id = ?`;
-        await conn.query(updateGameSql, [game_name, genre, studio_name, video_game_id]);
-        await conn.query(updateStudioSql, [address, studio_id]);
+        await conn.query(updateGameSql, [video_game_name, genre, studio_names[1], video_game_id]);
+
+        // Update the studio table
+        const updateStudioSql = `UPDATE studio SET studio_name = ?, address = ? WHERE studio_id = ?`;
+        await conn.query(updateStudioSql, [studio_names[1],address, studio_id]);
+        console.log(updateStudioSql)
         conn.release();
         res.redirect('/viewlist');
     } catch (error) {
         console.error('Error updating database:', error);
         res.status(500).send('Error updating database.');
-    }
-});
-
-app.get('/viewlist', async (req, res) => {
-    const sql = `
-        SELECT video_games.video_game_id, video_games.game_name, video_games.genre, 
-               video_games.studio_name, studio.address, studio.studio_id
-        FROM video_games
-        INNER JOIN studio ON video_games.studio_name = studio.studio_name
-    `;
-    try {
-        const [games] = await pool.query(sql);
-        res.render('viewlist', { games });
-    } catch (error) {
-        console.error('Error fetching games:', error);
-        res.status(500).send('Error fetching games.');
     }
 });
 
@@ -126,6 +147,22 @@ app.post('/addgame', async (req, res) => {
     } catch (error) {
         console.error('Error adding game:', error);
         res.status(500).send('Error adding game. Please try again.');
+    }
+});
+
+app.get('/viewlist', async (req, res) => {
+    const sql = `
+        SELECT video_games.video_game_id, video_games.game_name, video_games.genre, 
+               video_games.studio_name, studio.address, studio.studio_id
+        FROM video_games
+        INNER JOIN studio ON video_games.studio_name = studio.studio_name
+    `;
+    try {
+        const [games] = await pool.query(sql);
+        res.render('viewlist', { games });
+    } catch (error) {
+        console.error('Error fetching games:', error);
+        res.status(500).send('Error fetching games.');
     }
 });
 
@@ -174,23 +211,6 @@ app.get('/api/studios', async (req, res) => {
 
 app.get('/home', (req, res) => {
     res.render('home');
-});
-
-app.get('/updateDB', async (req, res) => {
-    const id = req.query.gameid; // Retrieve game_id from query parameters
-    try {
-        const sql = `SELECT * FROM video_games WHERE video_game_id = ?`;
-        const [games] = await pool.query(sql, [id]);
-        if (games.length > 0) {
-            const game = games[0]; // Get the first (and only) game
-            res.render('updateDB', { game });
-        } else {
-            res.status(404).send('Game not found');
-        }
-    } catch (error) {
-        console.error('Error fetching game:', error);
-        res.status(500).send('Error fetching game data.');
-    }
 });
 
 // Start the server

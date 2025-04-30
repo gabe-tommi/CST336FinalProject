@@ -15,3 +15,11 @@ header {
     padding: 10px; /* Add padding around the header content */
     box-sizing: border-box; /* Include padding in the element's width */
 }
+
+.navbar {
+    display: flex;
+    justify-content: center; /* Centers the navbar items horizontally */
+    gap: 15px; /* Adds spacing between the links */
+    padding: 10px; /* Optional: Add padding for better spacing */
+    border-radius: 5px; /* Optional: Add rounded corners */
+}

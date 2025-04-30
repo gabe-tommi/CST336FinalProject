@@ -10,8 +10,9 @@
 <body>
     <header><h1>Game Search</h1></header>
     <br>
-    <br>
-    <%- include ('partials/navbar') %>
+    <div class="navbar mb-3">
+        <%- include('partials/navbar') %>
+    </div>
     <br>
     <form action="/search" method="GET">
         <input type="text" name="query" placeholder="Search for a game..." required>
