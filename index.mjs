@@ -83,7 +83,40 @@ app.get('/studiomap', async (req, res) => {
         res.status(500).send('Error fetching studios');
     }
 });
+app.post('/updateDB', async (req, res) => {
+    const conn = await pool.getConnection();
+    const sql = `UPDATE video_games 
+                 SET game_name = ?, genre = ?, studio_name = ?
+                 WHERE video_game_id = ?`;
+    const params = [
+        req.body.game_name,
+        req.body.genre,
+        req.body.studio_name,
+        req.body.video_game_id
+    ];
+    await conn.query(sql, params);
+    const sq12 = 'UPDATE studio SET address = ? WHERE studio_id = ?';
+    const params2 =[
+        req.body.address,
+        req.body.studio_id
+    ];
+    await conn.query(sq12,params2)
+    conn.release();
+    res.redirect('/viewlist');
+});
+//route to viewlist
+app.get('/viewlist', async(req, res) =>{
+    try{
+        const[rows] = await pool.query('SELECT video_games.video_game_id, video_games.game_name,video_games.genre,video_games.studio_name,studio.address,studio.studio_id FROM video_games INNER JOIN studio ON video_games.studio_name = studio.studio_name');
+        console.log(rows);
+        res.render('viewlist', {games: rows });
+    
+    }catch(error){
+        console.error('Error fetching games:', error);
+        res.status(500).send('Error fetching games');
+    }
 
+});
 // Route to render the add game form
 app.get('/addgame', (req, res) => {
     res.render('addgame');

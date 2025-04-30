@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/style/styles.css">
-    <title>Document</title>
+    <title>Update Database</title>
 </head>
 
 <body class="d-flex flex-column justify-content-center align-items-center text-center">
@@ -16,41 +16,43 @@
     </div>
   
     <!-- filepath: /workspaces/CST336FinalProject/views/addgame.ejs -->
-     <form>
-<!-- <form id="updateGameForm" action="/addgame" method="POST"> -->
-    <label>Name of the Game</label>
-    <br>
-    <input id="name" type="text" name="name" required>
-    <br>
+     <form action = '/updateDB' method  = "POST">
+        <input type="hidden" name="video_game_id" value="<%= game.video_game_id %>">
+        <label for="video_game_name">Game Name:</label>
+        <input type="text" id="video_game_name" name="video_game_name" value="<%= game.video_game_name%>" required>
+        <br>
+         
     <label>Genre</label>
     <br>
     <select id="genre" name="genre" required>
-        <option value="Action">Action</option>
-        <option value="Adventure">Adventure</option>
-        <option value="RPG">RPG</option>
-        <option value="Shooter">Shooter</option>
-        <option value="Strategy">Strategy</option>
-        <option value="Simulation">Simulation</option>
-        <option value="Sports">Sports</option>
-        <option value="Racing">Racing</option>
-        <option value="Platformer">Platformer</option>
-        <option value="Puzzle">Puzzle</option>
-        <option value="Casual">Casual</option>
-        <option value="Party">Party</option>
-        <option value="Survival">Survival</option>
-        <option value="Horror">Horror</option>
-        <option value="Battle Royale">Battle Royale</option>
-        <option value="Other">Other</option>
+        <option value="Action"<%= game.genre === 'Action' ? 'selected' : '' %>>Action</option>
+        <option value="Adventure"<%= game.genre === 'Adventure' ? 'selected' : '' %>>Adventure</option>
+        <option value="RPG"<%= game.genre === 'RPG' ? 'selected' : '' %>>RPG</option>
+        <option value="Shooter"<%= game.genre === 'Shooter' ? 'selected' : '' %>>Shooter</option>
+        <option value="Strategy"<%= game.genre === 'Strategy' ? 'selected' : '' %>>Strategy</option>
+        <option value="Simulation"<%= game.genre === 'Simulation' ? 'selected' : '' %>>Simulation</option>
+        <option value="Sports"<%= game.genre === 'Sports' ? 'selected' : '' %>>Sports</option>
+        <option value="Racing"<%= game.genre === 'Racing' ? 'selected' : '' %>>Racing</option>
+        <option value="Platformer"<%= game.genre === 'Platformer' ? 'selected' : '' %>>Platformer</option>
+        <option value="Puzzle"<%= game.genre === 'Puzzle' ? 'selected' : '' %>>Puzzle</option>
+        <option value="Casual"<%= game.genre === 'Casual' ? 'selected' : '' %>>Casual</option>
+        <option value="Party"<%= game.genre === 'Party' ? 'selected' : '' %>>Party</option>
+        <option value="Survival"<%= game.genre === 'Survival' ? 'selected' : '' %>>Survival</option>
+        <option value="Horror"<%= game.genre === 'Horror' ? 'selected' : '' %>>Horror</option>
+        <option value="Battle Royale"<%= game.genre === 'Battle Royale' ? 'selected' : '' %>>Battle Royale</option>
+        <option value="Other"<%= game.genre === 'Other' ? 'selected' : '' %>>Other</option>
     </select>
     <br>
-    <label>Studio name</label>
+    <label for="studio_name">Studio name</label>
     <br>
-    <input id="studio_name" type="text" name="studio_name" required>
+    <input id="studio_name" type="text" name="studio_name" value="<%= game.studio_name%> " required>
     <br>
-    <label>Studio Address</label>
+    <label for = "address">Studio Address</label>
     <br>
-    <textarea name="address" id="address" required></textarea>
+    <textarea name="address" id="address" required><%= game.address %></textarea>
     <br>
+    <label for = "studio_name">Studio Name</label>
+    <input type="hidden" name="studio_name" value="<%= game.studio_name %>">
     <button class="btn btn-primary">Update</button>
 </form>
 <br>
