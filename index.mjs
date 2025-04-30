@@ -11,23 +11,18 @@ app.use(express.static('public'));
 //for Express to get values using POST method
 app.use(express.urlencoded({extended:true}));
 
-// putting below as a template for creating a pool later.
-// const pool = mysql.createPool({
-//     host: "gabedevspace.com",
-//     user: "gabedevs_webuser",
-//     password: "(+U%[VpVSy$-",
-//     database: "gabedevs_quotes",
-//     connectionLimit: 10,
-//     waitForConnections: true
-// });
-// const conn = await pool.getConnection();
-
-//Landing page render to then redirct once user clicks sign in or login
-
-
 // For Express to get values using POST method
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // To parse JSON bodies
+
+function userAuth(req, res, next){ // middleware function to ensure User Authentication
+    if(req.session.userAuthenticated){
+        next();
+    }
+    else{
+        res.redirect('/');
+    }
+}
 
 // Create a MySQL connection pool
 
@@ -40,17 +35,28 @@ const pool = mysql.createPool({
     waitForConnections: true
 });
 
-
 app.get('/', (req, res) => {
-    
     res.render('landing');
 });
+
 //Goes to login page when user clicks login
 app.get('/signin', (req, res) => {
     res.render('signin');
 });
 //Goes to signup page when user clicks sign up
 app.get('/signup', (req, res) => {
+    res.render('signup');
+});
+app.post('/signup', async (req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
+    let email = req.body.email;
+    let firstname = req.body.firstname;
+    let lastname = req.body.lastname;
+    let sql = `INSERT INTO user (username, password, email, first_name, last_name) 
+                VALUES (?, ?, ?, ?, ?)`;
+    let sqlParams = [username, password, email, firstname, lastname];
+    await pool.query(sql, sqlParams);
     res.render('signup');
 });
 //search page when user clicks search for games
