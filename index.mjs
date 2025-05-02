@@ -6,7 +6,7 @@ const app = express();
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
-
+let userId;
 
 //for Express to get values using POST method
 app.use(express.urlencoded({extended:true}));
@@ -40,14 +40,18 @@ app.get('/', (req, res) => {
 });
 
 //Goes to login page when user clicks login
-app.get('/signin', (req, res) => {
+app.get('/signin', async (req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
+    let sql = `SELECT * FROM user WHERE username = ?`;
+    await pool.query(sql, username);
     res.render('signin');
 });
 //Goes to signup page when user clicks sign up
 app.get('/signup', (req, res) => {
     res.render('signup');
 });
-app.post('/signup', async (req, res) => {
+app.post('/signup', async (req, res) => { // adds new users to DB
     let username = req.body.username;
     let password = req.body.password;
     let email = req.body.email;
@@ -74,7 +78,6 @@ app.get('/search', async (req, res) => {
 // Connects gameSearch to the navbar and renders the page
 app.get('/gamesearch',(req, res) => {
     let search=[];
-    
     res.render('gamesearch.ejs', { search});
 });
 
