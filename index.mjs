@@ -1,6 +1,7 @@
 import { render } from 'ejs';
 import express from 'express';
 import mysql from 'mysql2/promise';
+import session from 'express-session';
 
 const app = express();
 
@@ -14,6 +15,13 @@ app.use(express.urlencoded({extended:true}));
 // For Express to get values using POST method
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // To parse JSON bodies
+
+app.use(session({
+    secret: 'your_secret_key', 
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+}));
 
 function userAuth(req, res, next){ // middleware function to ensure User Authentication
     if(req.session.userAuthenticated){
@@ -39,18 +47,39 @@ app.get('/', (req, res) => {
     res.render('landing');
 });
 
-//Goes to login page when user clicks login
-app.get('/signin', async (req, res) => {
-    let username = req.body.username;
-    let password = req.body.password;
-    let sql = `SELECT * FROM user WHERE username = ?`;
-    await pool.query(sql, username);
+app.get('/signin', (req, res) => {
     res.render('signin');
 });
+
+//Goes to login page when user clicks login
+app.post('/signin', async (req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
+    let userQ = `SELECT * FROM user WHERE username = ?`;
+    const [user] = await pool.query(userQ, username);
+
+    try{ // will catch undefined error if user or password does not exist in DB
+        id = user[0].user_id; // uses session to store user id
+        if(user[0].username == username && user[0].password == password){
+            req.session.userAuthenticated = true;
+            res.render('home');
+        }
+        else{
+            req.session.userAuthenticated = false;
+            res.render('signin', {"error": "Incorrect username or password"});
+        }
+    }
+    catch{
+        req.session.userAuthenticated = false;
+        res.render('signin', {"error": "Incorrect username or password"});
+    }
+});
+
 //Goes to signup page when user clicks sign up
 app.get('/signup', (req, res) => {
     res.render('signup');
 });
+
 app.post('/signup', async (req, res) => { // adds new users to DB
     let username = req.body.username;
     let password = req.body.password;
@@ -63,8 +92,9 @@ app.post('/signup', async (req, res) => { // adds new users to DB
     await pool.query(sql, sqlParams);
     res.render('signup');
 });
+
 //search page when user clicks search for games
-app.get('/search', async (req, res) => {
+app.get('/search', userAuth, async (req, res) => {
     let sea = req.query.query;
     console.log(sea)
     if(!sea) {
@@ -76,13 +106,13 @@ app.get('/search', async (req, res) => {
     res.render('gamesearch',{search});
 });
 // Connects gameSearch to the navbar and renders the page
-app.get('/gamesearch',(req, res) => {
+app.get('/gamesearch', userAuth, (req, res) => {
     let search=[];
     res.render('gamesearch.ejs', { search});
 });
 
 // Route to display studio map
-app.get('/studiomap', async (req, res) => {
+app.get('/studiomap', userAuth, async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM studio');
         console.log(rows);
@@ -92,7 +122,7 @@ app.get('/studiomap', async (req, res) => {
         res.status(500).send('Error fetching studios');
     }
 });
-app.post('/updateDB', async (req, res) => {
+app.post('/updateDB', userAuth, async (req, res) => {
     const conn = await pool.getConnection();
     const sql = `UPDATE video_games 
                  SET game_name = ?, genre = ?, studio_name = ?
@@ -114,7 +144,7 @@ app.post('/updateDB', async (req, res) => {
     res.redirect('/viewlist');
 });
 //route to viewlist
-app.get('/viewlist', async(req, res) =>{
+app.get('/viewlist', userAuth, async(req, res) =>{
     try{
         const[rows] = await pool.query('SELECT video_games.video_game_id, video_games.game_name,video_games.genre,video_games.studio_name,studio.address,studio.studio_id FROM video_games INNER JOIN studio ON video_games.studio_name = studio.studio_name');
         console.log(rows);
@@ -127,12 +157,12 @@ app.get('/viewlist', async(req, res) =>{
 
 });
 // Route to render the add game form
-app.get('/addgame', (req, res) => {
+app.get('/addgame', userAuth, (req, res) => {
     res.render('addgame');
 });
 
 // Route to find a studio and display it on a map
-app.get('/findmap', async (req, res) => {
+app.get('/findmap', userAuth, async (req, res) => {
     const place = req.query.place; // Get the selected place from the query string
     console.log(`Selected place: ${place}`);
     try {
@@ -146,7 +176,7 @@ app.get('/findmap', async (req, res) => {
 
 // Route to add a game
 //  Route to add a game
-app.post('/addgame', async (req, res) => {
+app.post('/addgame', userAuth, async (req, res) => {
     const { name, genre, studio_name, address } = req.body;
 
     try {
@@ -172,7 +202,7 @@ app.post('/addgame', async (req, res) => {
     }
 });
 
-app.post('/favorite', async (req, res) => {
+app.post('/favorite', userAuth, async (req, res) => {
     const gameId = req.body.gameId; 
     const query = req.body.query; 
     const fav = req.body.favoriteGameId;
@@ -196,7 +226,7 @@ app.post('/favorite', async (req, res) => {
 
 
 // API route to search for studios by name or address
-app.get('/api/studios', async (req, res) => {
+app.get('/api/studios', userAuth, async (req, res) => {
     const searchTerm = req.query.q; // Get the search term from the query string
 
     try {
@@ -221,10 +251,10 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
-app.get('/home', (req, res) => {
+app.get('/home', userAuth, (req, res) => {
     res.render('home');
 });
 
-app.get('/updateDB', (req, res) => {
+app.get('/updateDB', userAuth, (req, res) => {
     res.render('updateDB');
 });
