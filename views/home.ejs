@@ -16,10 +16,11 @@
     <div class="navbar mb-3">
         <%- include('partials/navbar') %>
     </div>
+
     <div>
     <img src = "/img/characters.jpg"  height="40%"  width="80%"  style="float: center; margin-right: 10px; padding-bottom: 10px;">
     </div>
-<div>
+
     <p>Search</p>
     <p>- Search and add games to favorites</p>
     <p>==========================</p>
@@ -32,7 +33,15 @@
     <p>View List</p>
     <p>- View all games</p>
     <p>==========================</p>
-</div>
+
+
+    <br>
+    <p>write here</p>
+    <br>
+    <form action="/logout" method="POST">
+        <button type="submit" class="btn btn-danger">Log Out</button>
+    </form>
+
     <%- include('partials/footer') %>
 </body>
 </html>
