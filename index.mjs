@@ -279,3 +279,17 @@ app.post('/deleteGame', userAuth, async (req, res) => {
         res.status(500).send('Error deleting game. Please try again.');
     }
 });
+
+
+app.post('/signup', async (req, res) => {
+    const { username, password, email, firstname, lastname } = req.body;
+    const sql = `INSERT INTO user (username, password, email, first_name, last_name) VALUES (?, ?, ?, ?, ?)`;
+    const sqlParams = [username, password, email, firstname, lastname];
+    try {
+        await pool.query(sql, sqlParams);
+        res.redirect('/signin');
+    } catch (error) {
+        console.error('Error signing up:', error);
+        res.status(500).send('Error signing up. Please try again.');
+    }
+});
