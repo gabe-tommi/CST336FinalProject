@@ -9,18 +9,38 @@
 </head>
 <body>
     <header>
-        <h1>Home</h1>
-    </header>   
+        <h1>Home</h1>    </header>  
+    <br>
+     <h1>Welcome to the Video Game Homepage</h1>
     <br>
     <div class="navbar mb-3">
         <%- include('partials/navbar') %>
     </div>
+
+    <div>
+    <img src = "/img/characters.jpg"  height="40%"  width="80%"  style="float: center; margin-right: 10px; padding-bottom: 10px;">
+    </div>
+
+    <p>Search</p>
+    <p>- Search and add games to favorites</p>
+    <p>==========================</p>
+    <p>Add Game</p>
+    <p>- Add game to database</p>
+    <p>==========================</p>
+    <p>Studio Map</p>
+    <p>- View studio map</p>
+    <p>==========================</p>
+    <p>View List</p>
+    <p>- View all games</p>
+    <p>==========================</p>
+
+
     <br>
-    <p>write here</p>
-    <br>
+
     <form action="/logout" method="POST">
         <button type="submit" class="btn btn-danger">Log Out</button>
     </form>
+    <br>
     <%- include('partials/footer') %>
 </body>
 </html>
