@@ -24,6 +24,7 @@
         <form action="/favorite" method="POST">
             <% for (let game of search) { %>
                 <div>
+                    <h3 id = "video_game_id" >Game ID: <%= game.video_game_id %></h3>
                     <strong>Name:</strong> <%= game.game_name %><br>
                     <strong>Genre:</strong> <%= game.genre %><br>
                     <strong>Studio:</strong> <%= game.studio_name %><br><br>

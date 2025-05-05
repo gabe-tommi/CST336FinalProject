@@ -19,13 +19,18 @@
         <ul>
             <% games.forEach(game => { %>
                 <li>
-                    <strong id = 'game_id'>Game ID:</strong> <%= game.video_game_id %><br>
+                    <strong id="game_id">Game ID:</strong> <%= game.video_game_id %><br>
                     <strong>Game Name:</strong> <%= game.game_name %><br>
                     <strong>Genre:</strong> <%= game.genre %><br>
-                    <strong id = 'addr'>Studio:</strong> <%= game.studio_name %><br>
+                    <strong id="addr">Studio:</strong> <%= game.studio_name %><br>
                     
-                
                     <a href="/updateDB?gameid=<%= game.video_game_id %>" class="btn btn-success">Update</a>
+                    
+                    <!-- Delete Button -->
+                    <form action="/deleteGame" method="POST" style="display: inline;">
+                        <input type="hidden" name="video_game_id" value="<%= game.video_game_id %>">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
                 </li>
                 <br>
             <% }); %>
