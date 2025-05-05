@@ -207,9 +207,11 @@ app.get('/findmap', userAuth, async (req, res) => {
     }
 });
 
+
 app.post('/favorite', userAuth, async (req, res) => {
     console.log(`Accessing user ID: ${req.session.userId}`); // Log user_id
     const { favorite } = req.body;
+
     try {
         if (!favorite) {
             return res.status(400).send('No favorite data provided.');
