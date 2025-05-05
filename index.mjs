@@ -143,12 +143,13 @@ app.get('/updateDB', userAuth, async (req, res) => {
 
 app.post('/updateDB', userAuth, async (req, res) => {
     const { video_game_name, video_game_id, genre, studio_name, address, studio_id } = req.body;
+    console.log( video_game_name, video_game_id, genre, studio_name[1], address, studio_id)
     try {
         const conn = await pool.getConnection();
         const updateGameSql = `UPDATE video_games SET game_name = ?, genre = ?, studio_name = ? WHERE video_game_id = ?`;
-        await conn.query(updateGameSql, [video_game_name, genre, studio_name, video_game_id]);
+        await conn.query(updateGameSql, [video_game_name, genre, studio_name[1], video_game_id]);
         const updateStudioSql = `UPDATE studio SET studio_name = ?, address = ? WHERE studio_id = ?`;
-        await conn.query(updateStudioSql, [studio_name, address, studio_id]);
+        await conn.query(updateStudioSql, [studio_name[1], address, studio_id]);
         conn.release();
         res.redirect('/viewlist');
     } catch (error) {
