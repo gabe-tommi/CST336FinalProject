@@ -179,6 +179,7 @@ app.get('/findmap', async (req, res) => {
 
 app.post('/favorite', async (req, res) => {
     const { query, favorite } = req.body;
+    console.log(req.session.userId);
     try {
         if (!query || !favorite) {
             const sql = `SELECT * FROM video_games WHERE game_name LIKE ?`;
